@@ -3,6 +3,8 @@ package org.jsoup.parser;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Attributes;
 
+import java.util.Map;
+
 import javax.annotation.Nullable;
 
 /**
@@ -12,6 +14,9 @@ abstract class Token {
     TokenType type;
     static final int Unset = -1;
     private int startPos, endPos = Unset; // position in CharacterReader this token was read from
+
+    protected String tagName; // Added for CssTreeBuilder usage
+    protected Map<String, String> attributes; // Added for CssTreeBuilder usage
 
     private Token() {
     }
@@ -504,6 +509,31 @@ abstract class Token {
         EndTag,
         Comment,
         Character, // note no CData - treated in builder as an extension of Character
-        EOF
+        EOF,
+        Css
+    }
+
+    /* ---------------------------------------------------
+       tagName Getter & Setter
+       --------------------------------------------------- 
+       - added for CssTreeBuilder functionality   
+    */
+    public String getTagName() {
+        return tagName;
+    }
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
+    }
+
+    /* ---------------------------------------------------
+       attributeValue
+       --------------------------------------------------- 
+       - added for CssTreeBuilder functionality   
+    */
+    public String attributeValue(String attributeName) {
+        if (attributes != null) {
+            return attributes.get(attributeName);
+        }
+        return null;
     }
 }
