@@ -102,7 +102,7 @@ public class CssTreeBuilder extends TreeBuilder {
                 } // end if
             } // end for
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     } // end parseCssInline
 
@@ -145,7 +145,7 @@ public class CssTreeBuilder extends TreeBuilder {
                 System.out.println("Parsed selector: " + selector);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     } // end parseCssFile
     
@@ -179,7 +179,7 @@ public class CssTreeBuilder extends TreeBuilder {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace(); // 
         }
 
         return nodes;

@@ -11,14 +11,11 @@ public class JSoupTest {
 		
 //		getTitle();
 //		parseHtmlAndManipulate();
-		parseCssSimple();
 		
-		// Connect and create Document
-//		Document doc = Jsoup.connect("https://www.bbc.com/").get();
+//		String css = "h1 { color: red; font-size: 20px; }.some-class { display: none; height: 100vh; }";
+//		parseCssString(css); 
 		
-		// Get the first CSS link & file path
-//		Element link = doc.selectFirst("link[rel=stylesheet]");
-//		String cssFilePath = link.attr("href");
+		parseCssLink("http://www.hey.com");
 				
 	}
 	
@@ -48,12 +45,32 @@ public class JSoupTest {
         System.out.println(doc);
 	}
 	
-	public static void parseCssSimple() throws IOException {
-		// CSS string to be parsed
-		String css = "h1 { color: red; font-size: 20px; }.some-class { display: none; height: 100vh; }";
-		
+	public static void parseCssString(String css) throws IOException {
 		// Parse CSS styles from string
 		CssTreeBuilder cssParser = new CssTreeBuilder();
 		cssParser.parseCss(css);
+	}
+	
+	public static void parseCssLink(String url) throws IOException {
+		
+		// Create document
+		Document doc = Jsoup.connect(url).get();
+		
+		// Create Element
+		Element link = doc.selectFirst("link[rel=stylesheet]");
+		String cssFilePath = link.attr("href");
+		
+		// check if path is relative or absolute
+		if (cssFilePath.startsWith("/")) {
+			cssFilePath = url + cssFilePath;
+		}
+		
+		// Create CSS File Document
+		Document cssDoc = Jsoup.connect(cssFilePath).get();
+		// Convert cssDoc to a String
+		String cssDocStr = cssDoc.html();
+		parseCssString(cssDocStr);
+//		
+
 	}
 }
