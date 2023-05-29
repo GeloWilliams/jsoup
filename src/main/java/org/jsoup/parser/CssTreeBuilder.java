@@ -62,9 +62,9 @@ public class CssTreeBuilder extends TreeBuilder {
             if (tagName.equals("style")) {
                 String attributeValue = token.attributeValue("type");
                 if (attributeValue != null && attributeValue.equalsIgnoreCase("text/css")) {
-                    // process inline CSS
+                    // process CSS
                     String inlineCss = token.tagName;
-                    parseCssInline(inlineCss);
+                    parseCss(inlineCss);
                 }
             }
         } else if (token.type == Token.TokenType.Css) {
@@ -76,13 +76,13 @@ public class CssTreeBuilder extends TreeBuilder {
     } // end process
 
     /* ---------------------------------------------------
-       parseCssInline
+       parseCss
        ---------------------------------------------------
        - helper method with a .css file parameter
        - relies on cssparser library to handle the low-level
          parsing functionality
     */
-    private void parseCssInline(String css) {
+    public void parseCss(String css) {
         try {
             InputSource source = new InputSource(new StringReader(css));
             CSSStyleSheet styleSheet = cssParser.parseStyleSheet(source, null, null);
@@ -109,18 +109,19 @@ public class CssTreeBuilder extends TreeBuilder {
     /* ---------------------------------------------------
        handleParsing
        ---------------------------------------------------
-       - helper method for parseCssInline
+       - helper method for parseCss
        - currently prints the parsed CSS to the console
     */
     private void handleParsing(String selectorText, CSSStyleDeclaration styleDeclaration) {
         System.out.println("Selector: " + selectorText);
-        System.out.println("Parsed CSS: ");
+        // System.out.println("Parsed CSS: ");
 
         for (int i = 0; i < styleDeclaration.getLength(); i++) {
             String propertyName = styleDeclaration.item(i);
             String propertyValue = styleDeclaration.getPropertyValue(propertyName);
             System.out.println("   " + propertyName + ": " + propertyValue);
         }
+        System.out.println(""); // spacer
     } // end handleParsing
 
     /* ---------------------------------------------------
@@ -130,7 +131,7 @@ public class CssTreeBuilder extends TreeBuilder {
        - relies on cssparser library to handle the low-level
          parsing functionality
     */
-    private void parseCssFile(String filePath) {
+    public void parseCssFile(String filePath) {
         File file = new File(filePath);
         try (FileReader reader = new FileReader(file)) {
 
