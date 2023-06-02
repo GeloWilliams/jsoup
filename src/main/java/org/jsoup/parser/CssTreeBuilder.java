@@ -12,7 +12,12 @@ import org.w3c.dom.css.CSSStyleRule;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.css.sac.SelectorList;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
+// import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +75,11 @@ public class CssTreeBuilder extends TreeBuilder {
         } else if (token.type == Token.TokenType.Css) {
             // CSS file processing
             String cssFilePath = token.tagName;
-            parseCssFile(cssFilePath);
+            try{
+             parseCssFile(cssFilePath);
+            } catch (Exception e){
+
+            }
         }
         return true;
     } // end process
@@ -131,22 +140,21 @@ public class CssTreeBuilder extends TreeBuilder {
        - relies on cssparser library to handle the low-level
          parsing functionality
     */
-    public void parseCssFile(String filePath) {
+    public void parseCssFile(String filePath) throws IOException {
         File file = new File(filePath);
-        try (FileReader reader = new FileReader(file)) {
 
-            // Use cssparser library to parse the CSS file
-            InputSource source = new InputSource(reader);
-            SelectorList selectorList = cssParser.parseSelectors(source);
-
-            // Process the parser CSS selector list
-            for (int i = 0; i < selectorList.getLength(); i++) {
-                String selector = selectorList.item(i).toString();
-                System.out.println("Parsed selector: " + selector);
-            }
-        } catch (IOException e) {
-            // e.printStackTrace();
+        FileReader reader = new FileReader(file);
+    
+        // Use cssparser library to parse the CSS file
+        InputSource source = new InputSource(reader);
+        SelectorList selectorList = cssParser.parseSelectors(source);
+        // Process the parser CSS selector list
+        for (int i = 0; i < selectorList.getLength(); i++) {
+            String selector = selectorList.item(i).toString();
+            System.out.println("Parsed selector: " + selector);
         }
+        reader.close();
+        
     } // end parseCssFile
     
     /* ---------------------------------------------------
