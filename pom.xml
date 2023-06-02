@@ -330,12 +330,19 @@
       <version>0.9.30</version>
     </dependency>
 
-
+    <!-- https://mvnrepository.com/artifact/org.w3c/dom -->
     <dependency>
+        <groupId>org.w3c</groupId>
+        <artifactId>dom</artifactId>
+        <version>2.3.0-jaxb-1.0.6</version>
+    </dependency>
+
+
+    <!-- <dependency>
       <groupId>net.sourceforge.cssparser</groupId>
       <artifactId>cssparser</artifactId>
       <version>0.9.30</version>
-    </dependency>
+    </dependency>  -->
 
 
     <!-- junit -->
@@ -362,6 +369,8 @@
       <scope>test</scope>
     </dependency>
 
+
+
     <dependency>
       <!-- jetty for webserver integration tests -->
       <groupId>org.eclipse.jetty</groupId>
@@ -376,6 +385,26 @@
       <artifactId>jsr305</artifactId>
       <version>3.0.2</version>
       <scope>provided</scope>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+      <version>5.2.3</version>
+    </dependency>
+  
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>5.2.3</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>2.18.0</version>
     </dependency>
   </dependencies>
 
