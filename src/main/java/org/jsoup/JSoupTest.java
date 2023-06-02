@@ -15,7 +15,8 @@ public class JSoupTest {
 //		String css = "h1 { color: red; font-size: 20px; }.some-class { display: none; height: 100vh; }";
 //		parseCssString(css); 
 		
-		parseCssLink("http://www.hey.com");
+//		parseCssLink("http://www.hey.com");
+		parseCssLink("https://www.bbc.com");
 				
 	}
 	

@@ -91,28 +91,20 @@ public class CssTreeBuilder extends TreeBuilder {
        - relies on cssparser library to handle the low-level
          parsing functionality
     */
-    public void parseCss(String css) {
+    public List<Node> parseCss(String css) {
+        List<Node> nodes = new ArrayList<>();
         try {
             InputSource source = new InputSource(new StringReader(css));
             CSSStyleSheet styleSheet = cssParser.parseStyleSheet(source, null, null);
             CSSRuleList rules = styleSheet.getCssRules();
 
-            for (int i = 0; i < rules.getLength(); i++) {
-                CSSRule rule = rules.item(i);
-
-                if (rule instanceof CSSStyleRule) {
-                    CSSStyleRule styleRule = (CSSStyleRule) rule;
-                    String selectorText = styleRule.getSelectorText();
-                    CSSStyleDeclaration styleDeclaration = styleRule.getStyle();
-
-                    // Process the selector and style declaration as needed
-                    handleParsing(selectorText, styleDeclaration);
+            // Process the selector and style declaration as needed
+            return handleParsing(rules, nodes);
                     
-                } // end if
-            } // end for
         } catch (Exception e) {
             // e.printStackTrace();
         }
+        return nodes;
     } // end parseCssInline
 
     /* ---------------------------------------------------
@@ -121,16 +113,33 @@ public class CssTreeBuilder extends TreeBuilder {
        - helper method for parseCss
        - currently prints the parsed CSS to the console
     */
-    private void handleParsing(String selectorText, CSSStyleDeclaration styleDeclaration) {
-        System.out.println("Selector: " + selectorText);
-        // System.out.println("Parsed CSS: ");
+    private List<Node> handleParsing(CSSRuleList rules, List<Node> nodes) {
+        for (int i = 0; i < rules.getLength(); i++) {
+            CSSRule rule = rules.item(i);
+            
+            // appending
+            if (rule instanceof CSSStyleRule) {
+                CSSStyleRule styleRule = (CSSStyleRule) rule;
+                String selectorText = styleRule.getSelectorText();
+                CSSStyleDeclaration styleDeclaration = styleRule.getStyle();
 
-        for (int i = 0; i < styleDeclaration.getLength(); i++) {
-            String propertyName = styleDeclaration.item(i);
-            String propertyValue = styleDeclaration.getPropertyValue(propertyName);
-            System.out.println("   " + propertyName + ": " + propertyValue);
+                // create a new node based on parsed CSS rule and add to list
+                Node node = createNode(styleRule);
+                nodes.add(node);
+ 
+                // printing
+                System.out.println("Selector: " + selectorText);
+                // System.out.println("Parsed CSS: ");
+
+                for (int j = 0; j < styleDeclaration.getLength(); j++) {
+                    String propertyName = styleDeclaration.item(j);
+                    String propertyValue = styleDeclaration.getPropertyValue(propertyName);
+                    System.out.println("   " + propertyName + ": " + propertyValue);
+                }
+                System.out.println(""); // spacer
+            }
         }
-        System.out.println(""); // spacer
+        return nodes;
     } // end handleParsing
 
     /* ---------------------------------------------------
@@ -161,6 +170,7 @@ public class CssTreeBuilder extends TreeBuilder {
        parseFragment
        ---------------------------------------------------
        - takes a CSS fragment string and converts to InputSource
+       - returns a List<Node>
     */
     public List<Node> parseFragment(String cssFragment, Element context, String baseUri, Parser parser) {
         List<Node> nodes = new ArrayList<>();
@@ -170,22 +180,7 @@ public class CssTreeBuilder extends TreeBuilder {
             CSSStyleSheet styleSheet = cssParser.parseStyleSheet(source, null, baseUri);
             CSSRuleList rules = styleSheet.getCssRules();
 
-            for (int i = 0; i < rules.getLength(); i++) {
-                CSSRule rule = rules.item(i);
-
-                if (rule instanceof CSSStyleRule) {
-                    CSSStyleRule styleRule = (CSSStyleRule) rule;
-                    String selectorText = styleRule.getSelectorText();
-                    CSSStyleDeclaration styleDeclaration = styleRule.getStyle();
-
-                    // handle parsing
-                    handleParsing(selectorText, styleDeclaration);
-
-                    // create a new node based on parsed CSS rule and add to list
-                    Node node = createNode(styleRule);
-                    nodes.add(node);
-                }
-            }
+            handleParsing(rules, nodes);
         } catch (Exception e) {
             // e.printStackTrace(); // 
         }
