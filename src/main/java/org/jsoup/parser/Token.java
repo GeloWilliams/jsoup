@@ -1,11 +1,11 @@
 package org.jsoup.parser;
 
-import org.jsoup.helper.Validate;
-import org.jsoup.nodes.Attributes;
-
 import java.util.Map;
 
 import javax.annotation.Nullable;
+
+import org.jsoup.helper.Validate;
+import org.jsoup.nodes.Attributes;
 
 /**
  * Parse tokens for the Tokeniser.
@@ -13,20 +13,24 @@ import javax.annotation.Nullable;
 abstract class Token {
     TokenType type;
     static final int Unset = -1;
+
     private int startPos, endPos = Unset; // position in CharacterReader this token was read from
 
     protected String tagName; // Added for CssTreeBuilder usage
     protected Map<String, String> attributes; // Added for CssTreeBuilder usage
 
+    abstract String getData();
+
     private Token() {
     }
-    
+
     String tokenType() {
         return this.getClass().getSimpleName();
     }
 
     /**
-     * Reset the data represent by this token, for reuse. Prevents the need to create transfer objects for every
+     * Reset the data represent by this token, for reuse. Prevents the need to
+     * create transfer objects for every
      * piece of data, which immediately get GCed.
      */
     Token reset() {
@@ -63,6 +67,17 @@ abstract class Token {
         final StringBuilder publicIdentifier = new StringBuilder();
         final StringBuilder systemIdentifier = new StringBuilder();
         boolean forceQuirks = false;
+
+        private String data;
+
+        public Doctype(String data) {
+            this.data = data;
+        }
+
+        @Override
+        String getData() {
+            return data;
+        }
 
         Doctype() {
             type = TokenType.Doctype;
@@ -106,20 +121,27 @@ abstract class Token {
     }
 
     static abstract class Tag extends Token {
-        @Nullable protected String tagName;
-        @Nullable protected String normalName; // lc version of tag name, for case insensitive tree build
+        @Nullable
+        protected String tagName;
+        @Nullable
+        protected String normalName; // lc version of tag name, for case insensitive tree build
 
-        private final StringBuilder attrName = new StringBuilder(); // try to get attr names and vals in one shot, vs Builder
-        @Nullable private String attrNameS;
+        private final StringBuilder attrName = new StringBuilder(); // try to get attr names and vals in one shot, vs
+                                                                    // Builder
+        @Nullable
+        private String attrNameS;
         private boolean hasAttrName = false;
 
         private final StringBuilder attrValue = new StringBuilder();
-        @Nullable private String attrValueS;
+        @Nullable
+        private String attrValueS;
         private boolean hasAttrValue = false;
         private boolean hasEmptyAttrValue = false; // distinguish boolean attribute from empty string value
 
         boolean selfClosing = false;
-        @Nullable Attributes attributes; // start tags get attributes on construction. End tags get attributes on first new attribute (but only for parser convenience, not used).
+        @Nullable
+        Attributes attributes; // start tags get attributes on construction. End tags get attributes on first
+                               // new attribute (but only for parser convenience, not used).
 
         @Override
         Tag reset() {
@@ -138,9 +160,13 @@ abstract class Token {
             return this;
         }
 
-        /* Limits runaway crafted HTML from spewing attributes and getting a little sluggish in ensureCapacity.
-        Real-world HTML will P99 around 8 attributes, so plenty of headroom. Implemented here and not in the Attributes
-        object so that API users can add more if ever required. */
+        /*
+         * Limits runaway crafted HTML from spewing attributes and getting a little
+         * sluggish in ensureCapacity.
+         * Real-world HTML will P99 around 8 attributes, so plenty of headroom.
+         * Implemented here and not in the Attributes
+         * object so that API users can add more if ever required.
+         */
         private static final int MaxAttributes = 512;
 
         final void newAttribute() {
@@ -148,7 +174,8 @@ abstract class Token {
                 attributes = new Attributes();
 
             if (hasAttrName && attributes.size() < MaxAttributes) {
-                // the tokeniser has skipped whitespace control chars, but trimming could collapse to empty for other control codes, so verify here
+                // the tokeniser has skipped whitespace control chars, but trimming could
+                // collapse to empty for other control codes, so verify here
                 String name = attrName.length() > 0 ? attrName.toString() : attrNameS;
                 name = name.trim();
                 if (name.length() > 0) {
@@ -159,7 +186,9 @@ abstract class Token {
                         value = "";
                     else
                         value = null;
-                    // note that we add, not put. So that the first is kept, and rest are deduped, once in a context where case sensitivity is known (the appropriate tree builder).
+                    // note that we add, not put. So that the first is kept, and rest are deduped,
+                    // once in a context where case sensitivity is known (the appropriate tree
+                    // builder).
                     attributes.add(name, value);
                 }
             }
@@ -226,7 +255,8 @@ abstract class Token {
         }
 
         final void appendAttributeName(String append) {
-            // might have null chars because we eat in one pass - need to replace with null replacement character
+            // might have null chars because we eat in one pass - need to replace with null
+            // replacement character
             append = append.replace(TokeniserState.nullChar, Tokeniser.replacementChar);
 
             ensureAttrName();
@@ -267,7 +297,7 @@ abstract class Token {
                 attrValue.appendCodePoint(codepoint);
             }
         }
-        
+
         final void setEmptyAttributeValue() {
             hasEmptyAttrValue = true;
         }
@@ -300,6 +330,17 @@ abstract class Token {
             type = TokenType.StartTag;
         }
 
+        private String data;
+
+        @Override
+        String getData() {
+            return data;
+        }
+
+        public StartTag(String data) {
+            this.data = data;
+        }
+
         @Override
         Tag reset() {
             super.reset();
@@ -323,10 +364,21 @@ abstract class Token {
         }
     }
 
-    final static class EndTag extends Tag{
+    final static class EndTag extends Tag {
         EndTag() {
             super();
             type = TokenType.EndTag;
+        }
+
+        private String data;
+
+        public EndTag(String data) {
+            this.data = data;
+        }
+
+        @Override
+        String getData() {
+            return data;
         }
 
         @Override
@@ -416,7 +468,8 @@ abstract class Token {
             return getData();
         }
 
-        @Override protected Token.Character clone() {
+        @Override
+        protected Token.Character clone() {
             try {
                 return (Token.Character) super.clone();
             } catch (CloneNotSupportedException e) {
@@ -441,6 +494,17 @@ abstract class Token {
     final static class EOF extends Token {
         EOF() {
             type = Token.TokenType.EOF;
+        }
+
+        private String data;
+
+        public EOF(String data) {
+            this.data = data;
+        }
+
+        @Override
+        String getData() {
+            return data;
         }
 
         @Override
@@ -513,23 +577,26 @@ abstract class Token {
         Css
     }
 
-    /* ---------------------------------------------------
-       tagName Getter & Setter
-       --------------------------------------------------- 
-       - added for CssTreeBuilder functionality   
-    */
+    /*
+     * ---------------------------------------------------
+     * tagName Getter & Setter
+     * ---------------------------------------------------
+     * - added for CssTreeBuilder functionality
+     */
     public String getTagName() {
         return tagName;
     }
+
     public void setTagName(String tagName) {
         this.tagName = tagName;
     }
 
-    /* ---------------------------------------------------
-       attributeValue
-       --------------------------------------------------- 
-       - added for CssTreeBuilder functionality   
-    */
+    /*
+     * ---------------------------------------------------
+     * attributeValue
+     * ---------------------------------------------------
+     * - added for CssTreeBuilder functionality
+     */
     public String attributeValue(String attributeName) {
         if (attributes != null) {
             return attributes.get(attributeName);
