@@ -58,7 +58,7 @@ public class JsoupJsonTest {
         }
 
         // Parse JSON from a file
-        String filePath = "C:/Users/sonal/OneDrive/Desktop/SAJsoup/jsoup/src/main/java/org/jsoup/test.json";
+        String filePath = "test.json";
         try {
             JsonTreeBuilder jsonTreeBuilder = new JsonTreeBuilder();
             Element rootElementFromFile = jsonTreeBuilder.parseJsonFromFile(filePath);

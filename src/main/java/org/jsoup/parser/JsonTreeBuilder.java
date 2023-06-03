@@ -1,5 +1,7 @@
 package org.jsoup.parser;
 
+
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jsoup.Jsoup;
+import org.jsoup.internal.InputStreamUtil;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -219,7 +222,7 @@ public class JsonTreeBuilder extends TreeBuilder {
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
             try (InputStream inputStream = connection.getInputStream()) {
-                return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                return InputStreamUtil.readAllBytes(inputStream);
             }
         }
 
@@ -239,4 +242,7 @@ public class JsonTreeBuilder extends TreeBuilder {
         byte[] encodedBytes = Files.readAllBytes(Paths.get(filePath));
         return new String(encodedBytes, StandardCharsets.UTF_8);
     }
+
+    
+    
 }
