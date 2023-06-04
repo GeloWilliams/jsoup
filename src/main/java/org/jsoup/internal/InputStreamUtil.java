@@ -3,7 +3,6 @@ package org.jsoup.internal;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Utility class for reading all bytes from an InputStream.
@@ -25,7 +24,7 @@ public class InputStreamUtil {
         while ((length = inputStream.read(buffer)) != -1) {
             result.write(buffer, 0, length);
         }
-        return result.toString(StandardCharsets.UTF_8.name());
+        return result.toString("UTF_8");
     }
 
 

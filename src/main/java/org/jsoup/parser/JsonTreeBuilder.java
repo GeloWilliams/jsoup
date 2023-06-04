@@ -207,9 +207,9 @@ public class JsonTreeBuilder extends TreeBuilder {
 
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            try (InputStream inputStream = connection.getInputStream()) {
-                return InputStreamUtil.readAllBytes(inputStream);
-            }
+            InputStream inputStream = connection.getInputStream();
+            return InputStreamUtil.readAllBytes(inputStream);
+            
         }
 
         return null;
@@ -225,12 +225,12 @@ public class JsonTreeBuilder extends TreeBuilder {
      */
     private String fetchJsonFromFile(String filePath) throws IOException {
         StringBuilder sb = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
+        BufferedReader br = new BufferedReader(new FileReader(filePath));
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
         }
+        
         return sb.toString();
     }
 }
