@@ -1,14 +1,11 @@
 package org.jsoup.parser;
 
-
-
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +21,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+
 
 /**
  * The JsonTreeBuilder class is a custom implementation of TreeBuilder in the
@@ -42,13 +40,10 @@ import com.google.gson.JsonPrimitive;
  * Note: This class requires the Jsoup and Gson libraries to be included in the
  * classpath.
  */
-
 public class JsonTreeBuilder extends TreeBuilder {
-
     /**
      * Constructs a new instance of JsonTreeBuilder.
      */
-
     public JsonTreeBuilder() {
         super();
     }
@@ -59,7 +54,6 @@ public class JsonTreeBuilder extends TreeBuilder {
      * 
      * @return The default ParseSettings for the JsonTreeBuilder.
      */
-
     @Override
     protected ParseSettings defaultSettings() {
         return ParseSettings.preserveCase;
@@ -70,7 +64,6 @@ public class JsonTreeBuilder extends TreeBuilder {
      * 
      * @return A new instance of JsonTreeBuilder.
      */
-
     @Override
     public TreeBuilder newInstance() {
         return new JsonTreeBuilder();
@@ -82,7 +75,6 @@ public class JsonTreeBuilder extends TreeBuilder {
      * @param token The token to process.
      * @return True to continue processing, false otherwise.
      */
-
     @Override
     public boolean process(Token token) {
         if (token.type == Token.TokenType.StartTag) {
@@ -97,13 +89,11 @@ public class JsonTreeBuilder extends TreeBuilder {
         }
         return true;
     }
-
     /**
      * Parses a JSON fragment and converts it into a Jsoup Document object.
      * 
      * @param jsonFragment The JSON fragment to parse.
      */
-
     private void parseJsonFragment(String jsonFragment) {
         JsonElement jsonElement = JsonParser.parseString(jsonFragment);
         convertJsonToJsoup(jsonElement, null);
@@ -114,7 +104,6 @@ public class JsonTreeBuilder extends TreeBuilder {
      * 
      * @param jsonData The JSON data to parse.
      */
-
     private void parseJson(String jsonData) {
         JsonElement jsonElement = JsonParser.parseString(jsonData);
         convertJsonToJsoup(jsonElement, null);
@@ -127,7 +116,6 @@ public class JsonTreeBuilder extends TreeBuilder {
      * @param parentElement The parent Jsoup element to append the converted
      *                      elements to.
      */
-
     private void convertJsonToJsoup(JsonElement jsonElement, Element parentElement) {
         if (jsonElement.isJsonObject()) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -149,7 +137,6 @@ public class JsonTreeBuilder extends TreeBuilder {
             JsonPrimitive jsonPrimitive = jsonElement.getAsJsonPrimitive();
             String data = jsonPrimitive.getAsString();
             parentElement.appendChild(new TextNode(data));
-
         }
     }
 
@@ -158,6 +145,7 @@ public class JsonTreeBuilder extends TreeBuilder {
         Document doc = Jsoup.parseBodyFragment(input, baseUri);
         return doc.body().childNodes();
     }
+
 
     /**
      * Parses a JSON string from a URL and returns the root element as a Jsoup
@@ -169,7 +157,6 @@ public class JsonTreeBuilder extends TreeBuilder {
      * @throws IOException If an I/O error occurs while fetching or parsing the JSON
      *                     data.
      */
-
     public Element parseJsonFromUrl(String url) throws IOException {
         Validate.notEmpty(url, "URL must not be empty");
 
@@ -192,7 +179,6 @@ public class JsonTreeBuilder extends TreeBuilder {
      * @throws IOException If an I/O error occurs while reading or parsing the JSON
      *                     file.
      */
-
     public Element parseJsonFromFile(String filePath) throws IOException {
         Validate.notEmpty(filePath, "File path must not be empty");
 
@@ -205,6 +191,7 @@ public class JsonTreeBuilder extends TreeBuilder {
         return null;
     }
 
+
     /**
      * Fetches JSON data from a URL and returns it as a string.
      * 
@@ -213,7 +200,6 @@ public class JsonTreeBuilder extends TreeBuilder {
      *         response code is not HTTP_OK.
      * @throws IOException If an I/O error occurs while fetching the JSON data.
      */
-
     private String fetchJsonData(String url) throws IOException {
         URL jsonUrl = new URL(url);
         HttpURLConnection connection = (HttpURLConnection) jsonUrl.openConnection();
@@ -237,12 +223,14 @@ public class JsonTreeBuilder extends TreeBuilder {
      *         the file.
      * @throws IOException If an I/O error occurs while reading the JSON file.
      */
-
     private String fetchJsonFromFile(String filePath) throws IOException {
-        byte[] encodedBytes = Files.readAllBytes(Paths.get(filePath));
-        return new String(encodedBytes, StandardCharsets.UTF_8);
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+        }
+        return sb.toString();
     }
-
-    
-    
 }
